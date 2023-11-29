@@ -1,0 +1,29 @@
+Intended use of the product:
+
+The HippoVolume tool uses an advanced Machine Learning algorithim to assist radiologists in identifying the hippocampus volume from a given 3D scan of a patient's brain.  The volume of the hippocampus is one of the most useful methods to diagnose and track the progression of Alzheimer's Diseasn and several other brain disorders.  
+
+The tool generates a OHIF report and image that allows the radiologist to quickly find the volume of the hippocampus along with an overlay of where the algirithim detected the hippocampus across several slices of the scan.
+
+
+Training data source:
+
+The Tool's algorithim was trained on the "Hippocampus" dataset from the Medical Decathlon competition (http://medicaldecathlon.com/). The source data is a set of NIFTI files containing T2 MRI scans of the full brain.  
+
+
+Traing labels:
+
+Every MRI scan in the dataset has an associated overlay of the hippocampus that was determined by qualified radiologists.  The overlays were used as the "labels" for each MRI image, allowing the algorithim to be trained.
+
+
+Traning Performance:
+
+After the algorithim was trained, the ML algorighim was ran against a validation dataset and the accuracy was determiend by two metrics, the Dice and Jaccard similarity coefficients.  On average, the algorithim achieved a mean Dice score of 0.332 and a similarity coefficient of 0.226
+
+
+
+Strenghs and weaknesses of the algorithm perform well.
+
+The algorithm will perform well when given data that is similar to the data it was trained on.  The images should consist mostly of the brain and the entire hippocampus should be included within the scan.  If given data that includes additional areas outside of the brain or only a segment of the hippocampus, the results will be less accurate.
+
+
+
