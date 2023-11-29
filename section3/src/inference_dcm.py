@@ -13,6 +13,7 @@ This code will do the following:
 import os
 import sys
 import datetime
+import math
 import time
 import shutil
 import subprocess
@@ -62,9 +63,14 @@ def get_predicted_volumes(pred):
 
     # TASK: Compute the volume of your hippocampal prediction
     # <YOUR CODE HERE>
-    volume_ant = np.sum(pred[1])
-    volume_post = np.sum(pred[2])
-    total_volume = volume_ant + volume_post
+    #NAS - the training data labels did not differentiate between the anterior and posterior hippocampus.  I can't imagine
+    #how it couild be possible to differentiate between the two hippocampi.  So I'm just going to assume that all three
+    #values are equal.
+    print("get_predicted_volumes pred.shape: {}".format(pred.shape))
+
+    volume_ant = np.sum(pred)
+    volume_post = np.sum(pred)
+    total_volume = np.sum(pred)
 
     return {"anterior": volume_ant, "posterior": volume_post, "total": total_volume}
 
@@ -103,7 +109,14 @@ def create_report(inference, header, orig_vol, pred_vol):
 
     # SAMPLE CODE BELOW: UNCOMMENT AND CUSTOMIZE
     draw.text((10, 0), "HippoVolume.AI", (255, 255, 255), font=header_font)
-    report_text = f"Patient ID: {header.PatientID}\n NEEDS ADDITINAL INFORMATION"
+    
+    report_text = f'''Patient ID: {header.PatientID}\nTotal hippocampus volume from ML algorithim: {inference['total']}\n
+    The attached series of images represents a volumetric scan of the patient's hippocampus as determined 
+    by a machine learning algorithim.  The series of images consists of a series of slices along the axial 
+    plane.  The images on the left are the original scans. The images on the right are the predicted overlays
+    of the hippocampus returned from the ML algorithim.\n'''
+
+
     draw.multiline_text((10, 90),
                         report_text,
                         (255, 255, 255), font=main_font)
@@ -115,11 +128,30 @@ def create_report(inference, header, orig_vol, pred_vol):
     #
     # Create a PIL image from array:
     # Numpy array needs to flipped, transposed and normalized to a matrix of values in the range of [0..255]
-    # nd_img = np.flip((slice/np.max(slice))*0xff).T.astype(np.uint8)
-    # This is how you create a PIL image from numpy array
-    # pil_i = Image.fromarray(nd_img, mode="L").convert("RGBA").resize(<dimensions>)
-    # Paste the PIL image into our main report image object (pimg)
-    # pimg.paste(pil_i, box=(10, 280))
+    
+    for i, slice_num in enumerate(range(1, orig_vol.shape[0], 3)):
+        slice_pred = pred_vol[slice_num]
+        slice_orig = orig_vol[slice_num]
+
+        if np.max(slice_pred) != 0:
+            nd_img_pred = np.flip((slice_pred/np.max(slice_pred))*0xff).T.astype(np.uint8)
+        else: 
+            nd_img_pred = np.flip((slice_pred)*0xff).T.astype(np.uint8)
+
+        if np.max(slice_orig) != 0:
+            nd_img_orig = np.flip((slice_orig/np.max(slice_orig))*0xff).T.astype(np.uint8)
+        else:
+            nd_img_orig = np.flip((slice_orig)*0xff).T.astype(np.uint8)
+
+        # create a PIL image from numpy array
+        pil_i_pred = Image.fromarray(nd_img_pred, mode="L").convert("RGBA").resize((128, 128))
+        pil_i_orig = Image.fromarray(nd_img_orig, mode="L").convert("RGBA").resize((128, 128))
+        
+        # Paste the PIL image into our main report image object (pimg)
+        y_offset = 300 + (math.floor(i/3) * 140)
+        pimg.paste(pil_i_orig, box=((i%3 * 310) + 10, y_offset))
+        pimg.paste(pil_i_pred, box=((i%3 * 310) + 130, y_offset))
+
 
     return pimg
 
@@ -282,7 +314,7 @@ if __name__ == "__main__":
                 os.path.isdir(os.path.join(sys.argv[1], d))]
 
     # Get the latest directory
-    study_dir = sorted(subdirs, key=lambda dir: os.stat(dir).st_mtime, reverse=True)[0]
+    study_dir = sorted(subdirs, key=lambda dir: os.stat(dir).st_mtime, reverse=True)[2]
 
     print(f"Looking for series to run inference on in directory {study_dir}...")
 
@@ -309,18 +341,23 @@ if __name__ == "__main__":
     print("pred_volumes: {}".format(pred_volumes))
 
     # # Create and save the report
-    # print("Creating and pushing report...")
-    # report_save_path = r"<TEMPORARY PATH TO SAVE YOUR REPORT FILE>"
+    print("Creating and pushing report...")
+    report_save_path = r"../out/report.dcm"
     # # TASK: create_report is not complete. Go and complete it. 
     # # STAND OUT SUGGESTION: save_report_as_dcm has some suggestions if you want to expand your
     # # knowledge of DICOM format
-    # report_img = create_report(pred_volumes, header, volume, pred_label)
-    # save_report_as_dcm(header, report_img, report_save_path)
+    report_img = create_report(pred_volumes, header, volume, pred_label)
+    save_report_as_dcm(header, report_img, report_save_path)
 
     # # Send report to our storage archive
     # # TASK: Write a command line string that will issue a DICOM C-STORE request to send our report
     # # to our Orthanc server (that runs on port 4242 of the local machine), using storescu tool
-    # os_command("<COMMAND LINE TO SEND REPORT TO ORTHANC>")
+
+    #Docker container notes:
+    #CONTAINER ID   IMAGE                   COMMAND                  CREATED        STATUS        PORTS     NAMES
+    #add6059990bd   osimis/orthanc:latest   "/docker-entrypoint.…"   24 hours ago   Up 24 hours             jolly_knuth
+
+    os_command("storescu localhost 4242 {}".format(report_save_path))
 
     # # This line will remove the study dir if run as root user
     # # Sleep to let our StoreSCP server process the report (remember - in our setup
@@ -329,6 +366,6 @@ if __name__ == "__main__":
     # time.sleep(2)
     # shutil.rmtree(study_dir, onerror=lambda f, p, e: print(f"Error deleting: {e[1]}"))
 
-    # print(f"Inference successful on {header['SOPInstanceUID'].value}, out: {pred_label.shape}",
-    #       f"volume ant: {pred_volumes['anterior']}, ",
-    #       f"volume post: {pred_volumes['posterior']}, total volume: {pred_volumes['total']}")
+    print(f"Inference successful on {header['SOPInstanceUID'].value}, out: {pred_label.shape}",
+        f"volume ant: {pred_volumes['anterior']}, ",
+        f"volume post: {pred_volumes['posterior']}, total volume: {pred_volumes['total']}")
