@@ -55,7 +55,7 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
 
         # TASK: med_reshape function is not complete. Go and fix it!
         image = med_reshape(image, new_shape=(image.shape[0], y_shape, z_shape))
-        label = med_reshape(label, new_shape=(label.shape[0], y_shape, z_shape)).astype(int)
+        label = med_reshape(label, new_shape=(label.shape[0], y_shape, z_shape))#.astype(int)
 
         # TASK: Why do we need to cast label to int?
         # ANSWER: The model will act as a binary classifier for each pixel, so the labels needs to be binary, (0 or 1)

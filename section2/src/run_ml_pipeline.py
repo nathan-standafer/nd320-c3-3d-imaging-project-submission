@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
     # run training
     
-    #exp.run()
+    exp.run()
 
     # prep and run testing
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
     #exp.load_model_parameters('../out/2023-11-15_2236_Basic_unet/model.pth')
     #exp.load_model_parameters('../out/2023-11-22_0134_Basic_unet/model.pth')
     #exp.load_model_parameters('../out/2023-11-22_0208_Basic_unet/model.pth')
-    exp.load_model_parameters('../out/2023-11-24_1407_Basic_unet/model.pth')
+    #exp.load_model_parameters('../out/2023-11-24_1407_Basic_unet/model.pth')
     
     
     results_json = exp.run_test()
