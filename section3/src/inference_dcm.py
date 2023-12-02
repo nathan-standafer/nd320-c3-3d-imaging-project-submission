@@ -325,6 +325,7 @@ if __name__ == "__main__":
 
     # print("HippoVolume.AI: Running inference...")
     # # TASK: Use the UNetInferenceAgent class and model parameter file from the previous section
+    #  model file is here:  https://github.com/nathan-standafer/nd320-c3-3d-imaging-project-submission/blob/4eb323b444035580aff4088683b1fc5eb93d2cbe/section2/out/2023-12-02_1443_Basic_unet/model.pth
     inference_agent = UNetInferenceAgent(
         device="cuda",
         parameter_file_path=r"../../section2/out/2023-12-02_1443_Basic_unet/model.pth")
