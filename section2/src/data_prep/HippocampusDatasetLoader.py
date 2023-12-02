@@ -31,20 +31,19 @@ def LoadHippocampusData(root_dir, y_shape, z_shape):
 
     out = []
     for f in images:
-
+        
         # We would benefit from mmap load method here if dataset doesn't fit into memory
         # Images are loaded here using MedPy's load method. We will ignore header 
         # since we will not use it
         image, _ = load(os.path.join(image_dir, f))
         label, _ = load(os.path.join(label_dir, f))
 
+        #print("processing file: {}.  image shape: {}, label shape: {}".format(f, image.shape, label.shape))
+
         # TASK: normalize all images (but not labels) so that values are in [0..1] range
-        # <YOUR CODE GOES HERE>
-        image = image - np.min(image)
-        image = image / np.max(image)
-        
-        label = label - np.min(label)
-        label = label / np.max(label)
+        # ##### My code #####
+        image = image / image.max()
+        label = label / label.max()
 
         # We need to reshape data since CNN tensors that represent minibatches
         # in our case will be stacks of slices and stacks need to be of the same size.

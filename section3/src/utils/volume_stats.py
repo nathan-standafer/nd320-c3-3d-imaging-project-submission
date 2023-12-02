@@ -2,6 +2,7 @@
 Contains various functions for computing statistics over 3D volumes
 """
 import numpy as np
+from scipy.spatial.distance import jaccard
 
 def Dice3d(a, b):
     """
@@ -24,7 +25,7 @@ def Dice3d(a, b):
 
     # TASK: Write implementation of Dice3D. If you completed exercises in the lessons
     # you should already have it.
-    # <YOUR CODE HERE>
+    # ##### my code #####
     # copied from measuring_performance.py
     intersection = np.sum(a*b)
     volumes = np.sum(a) + np.sum(b)
@@ -55,12 +56,14 @@ def Jaccard3d(a, b):
 
     # TASK: Write implementation of Jaccard similarity coefficient. Please do not use 
     # the Dice3D function from above to do the computation ;)
-    # <YOUR CODE GOES HERE>
-    #The Jaccard similarity indes is the intersction of the two arrays divided by the union of the two arrays.
-    intersection = np.sum((a != 0) & (b != 0))
-    union = np.sum((a != 0) | (b != 0))
 
-    if union != 0:
-        return intersection / union
-    else:
-        return -1
+    # Flatten the arrays
+    flattened_a = a.ravel()
+    flattened_b = b.ravel()
+
+    # Calculate the Jaccard similarity coefficient
+    jaccard_similarity = jaccard(flattened_a, flattened_b)
+
+    print("jacard testing.  a.max: {}, b.max: {}".format(a.max(), b.max() ))
+
+    return jaccard_similarity

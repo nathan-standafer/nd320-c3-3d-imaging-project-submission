@@ -99,13 +99,11 @@ class UNetExperiment:
             # TASK: You have your data in batch variable. Put the slices as 4D Torch Tensors of 
             # shape [BATCH_SIZE, 1, PATCH_SIZE, PATCH_SIZE] into variables data and target. 
             # Feed data to the model and feed target to the loss function
-            # 
-            # data = <YOUR CODE HERE>
-            # target = <YOUR CODE HERE>
 
             #print("batch[\"image\"].shape: ", batch["image"].shape) #torch.Size([8, 1, 64, 64])
             #print("batch[\"seg\"].shape: ", batch["seg"].shape) #torch.Size([8, 1, 64, 64])
 
+            # ##### my code #####
             data = batch["image"].type(torch.cuda.FloatTensor)
             target = batch["seg"].type(torch.cuda.LongTensor)
 
@@ -164,7 +162,7 @@ class UNetExperiment:
             for i, batch in enumerate(self.val_loader):
                 
                 # TASK: Write validation code that will compute loss on a validation sample
-                # <YOUR CODE HERE>
+                # ##### my code #####
 
                 data = batch["image"].type(torch.cuda.FloatTensor)
                 target = batch["seg"].type(torch.cuda.LongTensor)

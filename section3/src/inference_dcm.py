@@ -50,6 +50,7 @@ def load_dicom_volume_as_numpy_from_list(dcmlist):
     # We also zero-out Pixel Data since the users of this function are only interested in metadata
     hdr.PixelData = None
     return (np.stack(slices, 2), hdr)
+    
 
 def get_predicted_volumes(pred):
     """Gets volumes of two hippocampal structures from the predicted array
@@ -62,7 +63,7 @@ def get_predicted_volumes(pred):
     """
 
     # TASK: Compute the volume of your hippocampal prediction
-    # <YOUR CODE HERE>
+    # ##### my code #####
     #NAS - the training data labels did not differentiate between the anterior and posterior hippocampus.  I can't imagine
     #how it couild be possible to differentiate between the two hippocampi.  So I'm just going to assume that all three
     #values are equal.
@@ -276,7 +277,7 @@ def get_series_for_inference(path):
     # certain way. Can you figure out which is that? 
     # Hint: inspect the metadata of HippoCrop series
 
-    # <YOUR CODE HERE>
+    # ##### my code #####
     series_for_inference = []
 
     print("************ ", len(dicoms))
@@ -326,7 +327,7 @@ if __name__ == "__main__":
     # # TASK: Use the UNetInferenceAgent class and model parameter file from the previous section
     inference_agent = UNetInferenceAgent(
         device="cuda",
-        parameter_file_path=r"../../section2/out/2023-11-15_2236_Basic_unet/model.pth")
+        parameter_file_path=r"../../section2/out/2023-12-02_1443_Basic_unet/model.pth")
 
     # # Run inference
     # # TASK: single_volume_inference_unpadded takes a volume of arbitrary size 

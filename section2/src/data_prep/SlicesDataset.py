@@ -51,15 +51,10 @@ class SlicesDataset(Dataset):
         # and the slice number are in the slc variable. 
         # Hint2: You can use None notation like so: arr[None, :] to add size-1 
         # dimension to a Numpy array
-        # <YOUR CODE GOES HERE>
-        counter = 0;
-        for i, d in enumerate(self.data):
-            for j in range(d["image"].shape[0]):
-                if counter == idx:
-                    sample["image"] = torch.from_numpy(d["image"][j, :, :]).unsqueeze(0)
-                    sample["seg"]   = torch.from_numpy(d["seg"][j, :, :]).unsqueeze(0)
-                    break
-                counter +=1
+        # ##### my code #####
+
+        sample["image"] = torch.from_numpy(self.data[slc[0]]["image"][slc[1]]).unsqueeze(0)
+        sample["seg"] = torch.from_numpy(self.data[slc[0]]["seg"][slc[1]]).unsqueeze(0)
 
         return sample
 
